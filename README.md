@@ -235,6 +235,8 @@ create region --name=productsRegion --type=PARTITION
 ordersRegion
 ```
 
+### Loading a JAR to GemFire
+
 ```
 % jar tf /Users/avannala/Documents/workspace/inline-caching-gemfire/target/inline-caching-gemfire-1.0-SNAPSHOT.jar | grep Product
 com/example/ui/ProductView.class
