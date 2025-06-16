@@ -239,12 +239,71 @@ http://localhost:9989/
 http://localhost:9989/products
 ```
 
+
+```
+gfsh>configure pdx --read-serialized=true
+```
+
+
 ```
 destroy region --name=productsRegion
 ```
 
 ```
 create region --name=productsRegion --type=PARTITION
+```
+
+```
+ordersRegion
+```
+
+```
+% jar tf /Users/avannala/Documents/workspace/inline-caching-gemfire/target/inline-caching-gemfire-1.0-SNAPSHOT.jar | grep Product
+com/example/ui/ProductView.class
+com/example/repository/ProductRepository.class
+com/example/model/ProductFetchResult.class
+com/example/model/Product.class
+com/example/service/ProductService.class
+```
+
+```
+% docker cp /Users/avannala/Documents/workspace/inline-caching-gemfire/target/inline-caching-gemfire-1.0-SNAPSHOT.jar d90c43c7f804:/inline-caching-gemfire-1.0-SNAPSHOT.jar
+Successfully copied 27.1kB to d90c43c7f804:/inline-caching-gemfire-1.0-SNAPSHOT.jar
+
+```
+
+```
+gfsh>deploy --jar=/inline-caching-gemfire-1.0-SNAPSHOT.jar
+
+Deploying files: inline-caching-gemfire-1.0-SNAPSHOT.jar
+Total file size is: 0.04MB
+
+Continue?  (Y/n): y
+ Member  |                   JAR                   | JAR Location
+-------- | --------------------------------------- | ---------------------------------------------------------------------
+server-0 | inline-caching-gemfire-1.0-SNAPSHOT.jar | /data/deployments/inline-caching-gemfire/main/lib/inline-caching-ge..
+
+gfsh>
+
+```
+
+
+
+```
+# Add to cart and save cookies
+curl -c cookies.txt -X POST "http://localhost:9989/api/cart/add/10097"
+
+# View cart using the same cookies (same session)
+curl -b cookies.txt "http://localhost:9989/api/cart"
+
+
+curl -b cookies.txt -X DELETE "http://localhost:9989/api/cart/remove/10097"
+
+
+curl -b cookies.txt  -X POST "http://localhost:9989/api/checkout" \
+  -d "name=John Doe" \
+  -d "shippingAddress=123 Main St" \
+  -d "billingAddress=456 Elm St"
 ```
 
 ### 💡 How Inline Caching Works in this Project
@@ -274,5 +333,3 @@ This intelligent flow ensures that your database is only queried when necessary,
 ## Conclusion
 
 This project serves as a practical example of how to implement inline caching with GemFire in a Spring Boot application. By caching frequently accessed data, you can significantly enhance the performance and scalability of your applications. Experiment with different data and observe the reduction in database queries thanks to GemFire's inline cache!# inline-caching-gemfire-postgres
-# gemfire-spring-shopping-sample
-# gemfire-spring-shopping-sample
