@@ -1,38 +1,16 @@
-# Inline Caching with GemFire
+# GemFire shopping with inline caching with Postgres
 
-This project demonstrates the implementation of inline caching using Apache Geode (GemFire) in a Spring Boot application. The goal is to improve application performance by caching frequently accessed data in memory, reducing the need for repeated database queries.
+This project demonstrates the implementation of inline caching using Apache Geode (GemFire) in a Spring Boot application. The goal is to improve application performance by caching frequently accessed data in memory, reducing the need for repeated database queries and exposes a shopping experiece levergaing the data cached in gemfire.
 
-## Project Structure
 
-```
-inline-caching-gemfire
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── com
-│   │   │       └── example
-│   │   │           ├── InlineCachingGemfireApplication.java
-│   │   │           ├── config
-│   │   │           │   └── GemFireConfig.java
-│   │   │           ├── controller
-│   │   │           │   └── DataController.java
-│   │   │           ├── service
-│   │   │           │   └── DataService.java
-│   │   │           └── model
-│   │   │               └── DataItem.java
-│   │   └── resources
-│   │       ├── application.properties
-│   │       └── static
-│   │           └── index.html
-├── pom.xml
-└── README.md
-```
 
 ## Features
 
 - **Inline Caching**: Utilizes GemFire to cache frequently accessed data, improving performance and reducing database load.
 - **Spring Boot Integration**: Fully integrated with Spring Boot for easy setup and configuration.
 - **RESTful API**: Provides a simple RESTful API to interact with the cached data.
+- **Vaadin UI**: Provides a user-friendly interface
+- **Shopping UI**: Provides a user-friendly interface for browsing products,
 
 ## Data Model
 
@@ -330,6 +308,85 @@ This intelligent flow ensures that your database is only queried when necessary,
 - The region type should be `PARTITION` or `REPLICATE` as needed.
 - The application connects as a GemFire client and uses the region for caching.
 
-## Conclusion
 
-This project serves as a practical example of how to implement inline caching with GemFire in a Spring Boot application. By caching frequently accessed data, you can significantly enhance the performance and scalability of your applications. Experiment with different data and observe the reduction in database queries thanks to GemFire's inline cache!# inline-caching-gemfire-postgres
+## Shopping API Endpoints
+
+The following endpoints are exposed by the application for shopping, cart, and product management. All endpoints are prefixed with `/api` unless otherwise noted.
+
+### Product Endpoints
+
+- **List all cached products**
+  - **GET** `/api/listproducts`
+  - Returns all products currently in the GemFire cache.
+  - Example:
+    ```
+    curl http://localhost:9989/api/listproducts
+    ```
+
+- **Fetch N products (loads from DB if not cached)**
+  - **GET** `/products`
+  - Use the Vaadin UI at [http://localhost:9989/products](http://localhost:9989/products) to fetch and view products.
+
+### Cart Endpoints
+
+- **View cart**
+  - **GET** `/api/cart`
+  - Returns all products in the current user's cart.
+  - Example:
+    ```
+    curl -b cookies.txt http://localhost:9989/api/cart
+    ```
+
+- **Add product to cart**
+  - **POST** `/api/cart/add/{prodId}`
+  - Adds the product with the given ID to the cart.
+  - Example:
+    ```
+    curl -c cookies.txt -X POST "http://localhost:9989/api/cart/add/10097"
+    ```
+
+- **Remove product from cart**
+  - **DELETE** `/api/cart/remove/{prodId}`
+  - Removes the product with the given ID from the cart.
+  - Example:
+    ```
+    curl -b cookies.txt -X DELETE "http://localhost:9989/api/cart/remove/10097"
+    ```
+
+- **Clear cart**
+  - **DELETE** `/api/cart/clear`
+  - Removes all products from the cart.
+  - Example:
+    ```
+    curl -b cookies.txt -X DELETE "http://localhost:9989/api/cart/clear"
+    ```
+
+### Checkout Endpoint
+
+- **Checkout**
+  - **POST** `/api/checkout`
+  - Completes the purchase for all items in the cart. Requires user info.
+  - Example:
+    ```
+    curl -b cookies.txt -X POST "http://localhost:9989/api/checkout" \
+      -d "name=John Doe" \
+      -d "shippingAddress=123 Main St" \
+      -d "billingAddress=456 Elm St"
+    ```
+
+---
+
+## Vaadin UI
+
+- **Product Browser:** [http://localhost:9989/products](http://localhost:9989/products)
+- **Product List (all cached):** [http://localhost:9989/listproducts](http://localhost:9989/listproducts)
+- **Cart:** [http://localhost:9989/cart](http://localhost:9989/cart)
+- **Checkout:** [http://localhost:9989/checkout](http://localhost:9989/checkout)
+
+---
+
+## Notes
+
+- Use the `-c cookies.txt` and `-b cookies.txt` options with `curl` to maintain session (cart is session-scoped).
+- The `/api/listproducts` endpoint only shows products currently in the GemFire cache.
+- Use the Vaadin UI to browse, add to cart, and checkout interactively.
