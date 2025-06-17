@@ -131,6 +131,15 @@ FROM generate_series(1, 1000) as gs(i);
    mvn clean install
    ```
 
+
+```
+mvn clean package -Pproduction -Dvaadin.force.production.build=true
+```
+
+```
+ jar tvf target/inline-caching-gemfire-1.0-SNAPSHOT.jar | grep META-INF/VAADIN/
+```
+
 3. Configure your database connection in `src/main/resources/application.properties`:
 
    ```
