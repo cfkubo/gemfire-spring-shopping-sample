@@ -65,3 +65,6 @@ server*.dat
 frontend/
 
 cookies*.txt
+
+*.bundle
+*.lock
