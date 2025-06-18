@@ -403,7 +403,7 @@ The following endpoints are exposed by the application for shopping, cart, and p
 
 
 
-
+<!-- 
 INFO]
 [INFO] -----------------< com.example:inline-caching-gemfire >-----------------
 [INFO] Building Inline Caching with GemFire 1.0-SNAPSHOT
@@ -429,4 +429,4 @@ Downloading from gemfire-release-repo: https://packages.broadcom.com/artifactory
 [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
 ubuntu@harbor:~/gemfire-spring-shopping$ ls -a
 .  ..  blog.md	.git  .github  .gitignore  loadtest.sh	.m2  manifest.yaml  pom.xml  README.md	src  target  .vscode
-ubuntu@harbor:~/gemfire-spring-shopping$
+ubuntu@harbor:~/gemfire-spring-shopping$ -->
