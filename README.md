@@ -131,7 +131,7 @@ FROM generate_series(1, 1000) as gs(i);
    mvn clean install
    ```
 
-
+## deploy to production
 ```
 mvn clean package -Pproduction -Dvaadin.force.production.build=true
 ```
@@ -401,3 +401,33 @@ The following endpoints are exposed by the application for shopping, cart, and p
 - Use the `-c cookies.txt` and `-b cookies.txt` options with `curl` to maintain session (cart is session-scoped).
 - The `/api/listproducts` endpoint only shows products currently in the GemFire cache.
 - Use the Vaadin UI to browse, add to cart, and checkout interactively.
+
+
+
+
+INFO]
+[INFO] -----------------< com.example:inline-caching-gemfire >-----------------
+[INFO] Building Inline Caching with GemFire 1.0-SNAPSHOT
+[INFO] --------------------------------[ jar ]---------------------------------
+Downloading from central: https://repo.maven.apache.org/maven2/com/vaadin/vaadin-maven-plugin/24.7.6/vaadin-maven-plugin-24.7.6.pom
+Downloaded from central: https://repo.maven.apache.org/maven2/com/vaadin/vaadin-maven-plugin/24.7.6/vaadin-maven-plugin-24.7.6.pom (5.2 kB at 8.8 kB/s)
+Downloading from central: https://repo.maven.apache.org/maven2/com/vaadin/vaadin-maven-plugin/24.7.6/vaadin-maven-plugin-24.7.6.jar
+Downloaded from central: https://repo.maven.apache.org/maven2/com/vaadin/vaadin-maven-plugin/24.7.6/vaadin-maven-plugin-24.7.6.jar (30 kB at 177 kB/s)
+Downloading from gemfire-release-repo: https://packages.broadcom.com/artifactory/gemfire/com/vmware/gemfire/gemfire-core/10.0.0/gemfire-core-10.0.0.pom
+Downloading from gemfire-release-repo: https://packages.broadcom.com/artifactory/gemfire/com/vmware/gemfire/gemfire-cq/10.0.0/gemfire-cq-10.0.0.pom
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  2.767 s
+[INFO] Finished at: 2025-06-17T21:20:51Z
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal on project inline-caching-gemfire: Could not resolve dependencies for project com.example:inline-caching-gemfire:jar:1.0-SNAPSHOT: Failed to collect dependencies at com.vmware.gemfire:gemfire-core:jar:10.0.0: Failed to read artifact descriptor for com.vmware.gemfire:gemfire-core:jar:10.0.0: Could not transfer artifact com.vmware.gemfire:gemfire-core:pom:10.0.0 from/to gemfire-release-repo (https://packages.broadcom.com/artifactory/gemfire/): Authentication failed for https://packages.broadcom.com/artifactory/gemfire/com/vmware/gemfire/gemfire-core/10.0.0/gemfire-core-10.0.0.pom 401 Unauthorized -> [Help 1]
+[ERROR]
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR]
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/DependencyResolutionException
+ubuntu@harbor:~/gemfire-spring-shopping$ ls -a
+.  ..  blog.md	.git  .github  .gitignore  loadtest.sh	.m2  manifest.yaml  pom.xml  README.md	src  target  .vscode
+ubuntu@harbor:~/gemfire-spring-shopping$
