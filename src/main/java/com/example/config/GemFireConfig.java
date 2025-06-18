@@ -37,9 +37,13 @@ import org.apache.geode.cache.client.ClientCacheFactory;
 import org.apache.geode.cache.client.ClientRegionFactory;
 import org.apache.geode.cache.client.ClientRegionShortcut;
 import org.apache.geode.cache.Region;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.net.InetSocketAddress;
+import java.util.Collections;
 
 @Configuration
 public class GemFireConfig {
@@ -47,11 +51,8 @@ public class GemFireConfig {
     @Value("${app.gemfire.region-name}")
     private String regionName;
 
-    @Value("${spring.data.gemfire.locator.host:localhost}")
-    private String locatorHost;
-
-    @Value("${spring.data.gemfire.locator.port:10334}")
-    private int locatorPort;
+    @Autowired
+    private GemFireVCAPConfig.GemFireLocatorProperties locatorProperties;
 
     @Bean
     public Region<Long, Order> ordersRegion(ClientCache clientCache) {
@@ -61,10 +62,9 @@ public class GemFireConfig {
 
     @Bean
     public ClientCache clientCache() {
-        return new ClientCacheFactory()
-                .setPoolSubscriptionEnabled(true)
-                .addPoolLocator(locatorHost, locatorPort)
-                .create();
+        ClientCacheFactory factory = new ClientCacheFactory();
+        factory.addPoolLocator(locatorProperties.getHost(), locatorProperties.getPort());
+        return factory.create();
     }
 
     @Bean
