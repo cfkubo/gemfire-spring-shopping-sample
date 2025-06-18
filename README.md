@@ -93,11 +93,11 @@ CREATE TABLE data_item (
 );
 
 
-INSERT INTO data_item (id, name, description) VALUES (1, 'Widget', 'A useful widget');
-
-
-INSERT INTO data_item (name, description)
+INSERT INTO data_item (id, name, description)
 SELECT
+    -- Dynamically calculate the starting ID based on the current MAX(id) in the table
+    -- COALESCE handles the case where the table is empty (MAX(id) would be NULL)
+    COALESCE((SELECT MAX(id) FROM data_item), 0) + gs.i,
     'Product ' || SUBSTRING(MD5(RANDOM()::TEXT) FROM 1 FOR 3) || FLOOR(RANDOM() * 9000 + 1000)::TEXT,
     'This is a randomly generated description for item ' || gs.i || '. It highlights various attributes and features, such as ' ||
     CASE FLOOR(RANDOM() * 3)
@@ -114,7 +114,6 @@ SELECT
     END ||
     ' Additional unique identifier: ' || MD5(RANDOM()::TEXT)
 FROM generate_series(1, 1000) as gs(i);
-
 ```
 
 
