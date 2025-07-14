@@ -240,7 +240,8 @@ create region --name=productsRegion --type=PARTITION
 ```
 
 ```
-ordersRegion
+create region --name=ordersRegion --type=PARTITION
+
 ```
 
 ### Loading a JAR to GemFire
