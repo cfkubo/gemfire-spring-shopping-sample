@@ -13,13 +13,13 @@ shop_session() {
   PRODUCT_ID=${PRODUCT_IDS[$((SESSION_ID % ${#PRODUCT_IDS[@]}))]}
 
   echo "Session $SESSION_ID: Adding product $PRODUCT_ID to cart"
-  curl -s -c $COOKIE_FILE -X POST "http://localhost:9989/api/cart/add/$PRODUCT_ID"
+  curl -s -c $COOKIE_FILE -X POST "http://localhost:9100/api/cart/add/$PRODUCT_ID"
 
   echo "Session $SESSION_ID: Viewing cart"
-  curl -s -b $COOKIE_FILE "http://localhost:9989/api/cart"
+  curl -s -b $COOKIE_FILE "http://localhost:9100/api/cart"
 
   echo "Session $SESSION_ID: Checking out"
-  curl -s -b $COOKIE_FILE -X POST "http://localhost:9989/api/checkout" \
+  curl -s -b $COOKIE_FILE -X POST "http://localhost:9100/api/checkout" \
     -d "name=User$SESSION_ID" \
     -d "shippingAddress=123 Main St, Apt $SESSION_ID" \
     -d "billingAddress=456 Elm St, Apt $SESSION_ID"

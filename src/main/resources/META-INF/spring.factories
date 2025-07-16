@@ -1,0 +1,3 @@
+# Correct format example
+org.springframework.context.ApplicationContextInitializer=\
+  com.example.config.GemFireVCAPInitializer
