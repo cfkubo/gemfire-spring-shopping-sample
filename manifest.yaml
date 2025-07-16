@@ -1,0 +1,30 @@
+# manifest.yml
+
+applications:
+- name: gemFire-shopping-app 
+  memory: 1G
+  instances: 1
+  path: target/inline-caching-gemfire-1.0-SNAPSHOT.jar
+  buildpack: java_buildpack_offline
+  services:
+  - gemfire
+  - postgresdb
+
+  env:
+    JAVA_OPTS: -Djava.security.egd=file:///dev/urandom
+    SPRING_PROFILES_ACTIVE: cloud,on-demand
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 21.+ } }'
+    JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+    VAADIN_PRODUCTION_MODE: true
+
+    # --- Optional: Common Java/Spring Boot Configurations ---
+    # Set Spring profiles (useful for cloud-specific configurations)
+    # SPRING_PROFILES_ACTIVE: cloud
+
+    # If your application uses the `server.port` property, Spring Boot typically
+    # picks up the Cloud Foundry `$PORT` environment variable automatically.
+    # However, if you explicitly set it or have issues, you can ensure it uses $PORT.
+    # JAVA_OPTS: -Dserver.port=$PORT
+
+    # You might need to increase heap space for larger applications
+    # JAVA_OPTS: -Xmx768M -Xms768M -Dserver.port=$PORT
