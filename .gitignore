@@ -46,9 +46,6 @@ server*.dat
 .env
 .env.*
 
-# Docker
-**/docker-compose.override.yml
-**/docker-compose.local.yml
 
 # Node/npm (if any frontend)
 /node_modules/
