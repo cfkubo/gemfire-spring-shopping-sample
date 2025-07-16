@@ -1,0 +1,208 @@
+version: '3.5'
+
+name: gemfire-cluster
+services:
+  gemfire-locator-0:
+    image: gemfire/gemfire-all:10.1-jdk17
+    command: gfsh start locator --name=locator-0 --hostname-for-clients=gemfire-locator-0 --J='-Dgemfire.jmx-manager-hostname-for-clients=gemfire-locator-0'
+    environment:
+      - ACCEPT_TERMS=y
+    ports:
+      - "10334:10334"
+      - "7070:7070"
+      - "1099:1099"
+    expose:
+      - 10334
+      - 7070
+      - 1099
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7070/management/v1/members/locator-0"]
+      interval: 30s
+      start_interval: 5s
+      start_period: 20s
+      retries: 5
+    networks: [gemfire-cluster-networks]
+
+  gemfire-server-0:
+    image: gemfire/gemfire-all:10.1-jdk17
+    depends_on:
+      gemfire-locator-0:
+        condition: service_healthy
+    # Important: The --locators option should use the service name for inter-container communication
+    command: gfsh start server --name=server-0 --locators=gemfire-locator-0[10334] --start-rest-api --http-service-port=7070 --hostname-for-clients=gemfire-server-0
+    environment:
+      - ACCEPT_TERMS=y
+    ports:
+      - "7071:7070"
+      - "40405:40405"
+      - "40404:40404"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7070/gemfire-api/v1/ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    links:
+      - gemfire-locator-0
+    networks: [gemfire-cluster-networks]
+
+  management-console:
+    image: gemfire/gemfire-management-console:latest
+    ports:
+      - "7072:8080"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      start_interval: 5s
+      start_period: 20s
+      retries: 5
+    depends_on:
+      gemfire-locator-0:
+        condition: service_healthy
+    links:
+      - gemfire-locator-0
+    networks: [gemfire-cluster-networks]
+
+  postgres:
+    image: debezium/example-postgres:2.3.3.Final
+    container_name: postgres-gem
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5444:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks: [gemfire-cluster-networks]
+
+  spring-gemfire-shopping:
+    build: .
+    image: spring-gemfire-shopping:latest
+    ports:
+      - 9999:9999
+    depends_on:
+      gemfire-server-0:
+        condition: service_healthy
+      postgres: # Add dependency on postgres
+        condition: service_healthy
+    environment:
+      - JAVA_OPTS= # You might want to add JDBC connection string here for your Spring app
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres # Example for Spring Boot
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATA_GEMFIRE_POOL_LOCATORS=gemfire-locator-0[10334] # <--- CHANGE THIS LINE
+    networks: [gemfire-cluster-networks]
+    # Uncomment if you want to see logs in your terminal
+    # tty: true
+    # stdin_open: true
+
+networks:
+  gemfire-cluster-networks:
+    driver: bridge
+
+
+
+# version: '3.5'
+
+# name: gemfire-cluster
+# services:
+#   gemfire-locator-0:
+#     image: gemfire/gemfire-all:10.1-jdk17
+#     command: gfsh start locator --name=locator-0 --hostname-for-clients=host.docker.internal --J='-Dgemfire.jmx-manager-hostname-for-clients=host.docker.internal'
+#     environment:
+#       - ACCEPT_TERMS=y
+#     ports:
+#       - "10334:10334"
+#       - "7070:7070"
+#       - "1099:1099"
+#     expose:
+#       - 10334
+#       - 7070
+#       - 1099
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:7070/management/v1/members/locator-0"]
+#       interval: 30s
+#       start_interval: 5s
+#       start_period: 20s
+#       retries: 5
+#     networks: [gemfire-cluster-networks]
+
+#   gemfire-server-0:
+#     image: gemfire/gemfire-all:10.1-jdk17
+#     depends_on:
+#       gemfire-locator-0:
+#         condition: service_healthy
+#     command: gfsh start server --name=server-0 --locators=gemfire-locator-0[10334] --start-rest-api --http-service-port=7070 --hostname-for-clients=host.docker.internal
+#     environment:
+#       - ACCEPT_TERMS=y
+#     ports:
+#       - "7071:7070"
+#       - "40405:40405"
+#       - "40404:40404"
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:7070/gemfire-api/v1/ping"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+#     links:
+#       - gemfire-locator-0
+#     networks: [gemfire-cluster-networks]
+
+#   management-console:
+#     image: gemfire/gemfire-management-console:latest
+#     ports:
+#       - "7072:8080"
+#     healthcheck:
+#       test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+#       interval: 30s
+#       start_interval: 5s
+#       start_period: 20s
+#       retries: 5
+#     depends_on:
+#       gemfire-locator-0:
+#         condition: service_healthy
+#     links:
+#       - gemfire-locator-0
+#     networks: [gemfire-cluster-networks]
+
+#   postgres:
+#     image: debezium/example-postgres:2.3.3.Final
+#     container_name: postgres-gem
+#     environment:
+#       - POSTGRES_USER=postgres
+#       - POSTGRES_PASSWORD=postgres
+#     ports:
+#       - "5444:5432"
+#     healthcheck:
+#       test: ["CMD-SHELL", "pg_isready -U postgres"]
+#       interval: 5s
+#       timeout: 5s
+#       retries: 5
+#     networks: [gemfire-cluster-networks]
+
+#   spring-gemfire-shopping:
+#     build: .
+#     image: spring-gemfire-shopping:latest
+#     ports:
+#       - 9999:9999
+#     depends_on:
+#       gemfire-server-0:
+#         condition: service_healthy
+#       postgres: # Add dependency on postgres
+#         condition: service_healthy
+#     environment:
+#       - JAVA_OPTS= # You might want to add JDBC connection string here for your Spring app
+#       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres # Example for Spring Boot
+#       - SPRING_DATASOURCE_USERNAME=postgres
+#       - SPRING_DATASOURCE_PASSWORD=postgres
+#       - SPRING_DATA_GEMFIRE_POOL_LOCATORS=gemfire-locator-0[10334]
+#     networks: [gemfire-cluster-networks]
+#     # Uncomment if you want to see logs in your terminal
+#     # tty: true
+#     # stdin_open: true
+
+# networks:
+#   gemfire-cluster-networks:
+#     driver: bridge
