@@ -297,6 +297,8 @@ Rows   : 6
 ![gfsh](static/gfsh.png)
 
 
+### Session/Cookie based testing the Shopping simulation via cURL
+
 ```
 # Add to cart and save cookies
 curl -c cookies.txt -X POST "http://localhost:9989/api/cart/add/10097"
