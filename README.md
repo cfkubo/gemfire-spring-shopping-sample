@@ -276,6 +276,24 @@ gfsh>
 
 ```
 
+```
+gfsh>query --query="SELECT * FROM /dataItemRegion"
+Result : true
+Limit  : 100
+Rows   : 6
+
+ id  |       name        | description
+---- | ----------------- | ----------------------------------------------------------------------
+156  | "Product 0629040" | "This is a randomly generated description for item 156. It highlight..
+2    | "Product f6b2968" | "This is a randomly generated description for item 2. It highlights ..
+5    | "Product 4252604" | "This is a randomly generated description for item 5. It highlights ..
+1    | "Product 3058241" | "This is a randomly generated description for item 1. It highlights ..
+956  | "Product d576461" | "This is a randomly generated description for item 956. It highlight..
+1000 | "Product 4843792" | "This is a randomly generated description for item 1000. It highligh..
+
+```
+
+!(static/gfsh.png)
 
 
 ```
