@@ -130,7 +130,8 @@ FROM generate_series(1, 1000) as gs(i);
    mvn clean install
    ```
 
-## deploy to production
+## Deploy to production
+
 ```
 mvn clean package -Pproduction -Dvaadin.force.production.build=true
 ```
