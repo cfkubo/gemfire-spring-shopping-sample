@@ -19,6 +19,12 @@ public class GemFireConfig {
     @Value("${app.gemfire.region-name}")
     private String regionName;
 
+     @Value("${app.gemfire.locator.host}")
+    private String locatorHost;
+
+    @Value("${app.gemfire.locator.port}")
+    private int locatorPort;
+
     @Autowired
     private GemFireVCAPConfig.GemFireLocatorProperties locatorProperties;
 
@@ -28,12 +34,20 @@ public class GemFireConfig {
         return regionFactory.create("ordersRegion");
     }
 
+    // @Bean
+    // public ClientCache clientCache() {
+    //     ClientCacheFactory factory = new ClientCacheFactory();
+    //     factory.addPoolLocator(locatorProperties.getHost(), locatorProperties.getPort());
+    //     return factory.create();
+    // }
+
     @Bean
     public ClientCache clientCache() {
         ClientCacheFactory factory = new ClientCacheFactory();
-        factory.addPoolLocator(locatorProperties.getHost(), locatorProperties.getPort());
+        factory.addPoolLocator(locatorHost, locatorPort);
         return factory.create();
     }
+    
 
     @Bean
     public Region<Integer, Product> productsRegion(ClientCache clientCache) {
