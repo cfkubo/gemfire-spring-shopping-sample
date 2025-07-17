@@ -93,7 +93,9 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - SPRING_DATA_GEMFIRE_POOL_LOCATORS=gemfire-locator-0[10334]
+      - APP.GEMFIRE_REGION_NAME=productsRegion
+      - APP.GEMFIRE_LOCATOR_HOST=host.docker.internal
+      - APP.GEMFIRE_LOCATOR_PORT=10334
     networks: [gemfire-cluster-networks]
     # Uncomment if you want to see logs in your terminal
     # tty: true
